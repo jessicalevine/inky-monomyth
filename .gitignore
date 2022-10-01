@@ -10,3 +10,4 @@ app/renderer/documentation/
 .idea/
 *.AppImage
 AppImage
+app/package-lock.json

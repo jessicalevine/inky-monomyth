@@ -202,7 +202,7 @@ function refresh() {
                     type: 'separator'
                 },
                 {
-                    label: i18n._('Export to JSON...'),
+                    label: i18n._('Export to XML...'),
                     accelerator: 'CmdOrCtrl+Shift+S',
                     enabled: callbacks.isFocusedWindow,
                     click: callbacks.exportJson

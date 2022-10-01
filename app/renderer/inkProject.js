@@ -9,6 +9,7 @@ const mkdirp = require('mkdirp');
 const i18n = require('./i18n.js');
 const { InkMode } = require('./ace-ink-mode/ace-ink.js');
 const { PlayerView } = require('./playerView.js');
+const xmlescape = require('xml-escape');
 
 const EditorView = require("./editorView.js").EditorView;
 const NavView = require("./navView.js").NavView;
@@ -77,8 +78,6 @@ InkProject.prototype.createInkFile = function(anyPath, isBrandNew, loadErrorCall
 
     this.files.push(inkFile);
 
-    this.sortFileList();
-    
     return inkFile;
 }
 
@@ -115,7 +114,7 @@ InkProject.prototype.refreshIncludes = function() {
 
     var relPathsFromINCLUDEs = [];
     var addIncludePathsFromFile = (inkFile) => {
-        if( inkFile.includes.length == 0 )
+        if( !inkFile.includes )
             return;
 
         inkFile.includes.forEach(incPath => {
@@ -153,7 +152,7 @@ InkProject.prototype.refreshIncludes = function() {
             let absPath = path.join(this.mainInk.projectDir, newIncludeRelPath);
             fs.stat(absPath, (err, stats) => {
                 // If it exists, and double check that it hasn't already been created during the async fs.stat
-                if( !!stats && stats.isFile() &&  !_.some(this.files, f => f.relativePath() == newIncludeRelPath) ) {
+                if( stats.isFile() &&  !_.some(this.files, f => f.relativePath() == newIncludeRelPath) ) {
                     let newFile = this.createInkFile(newIncludeRelPath, isBrandNew = false, err => {
                         alert(`${i18n._("Failed to load ink file:")} ${err}`);
                         this.files.remove(newFile);
@@ -163,20 +162,11 @@ InkProject.prototype.refreshIncludes = function() {
             });
             
         });
-
-        this.sortFileList();
     }
 
     NavView.setFiles(this.mainInk, this.files);
     EditorView.setFiles(this.files);
     LiveCompiler.setEdited();
-}
-
-InkProject.prototype.sortFileList = function() {
-    var mainInkFile = this.mainInk;
-    this.files.sort(function(a,b) {
-        return mainInkFile.includes.indexOf(a.relPath) - mainInkFile.includes.indexOf(b.relPath) 
-    } );
 }
 
 InkProject.prototype.refreshUnsavedChanges = function() {
@@ -379,7 +369,7 @@ InkProject.prototype.export = function(exportType) {
         if( this.defaultExportPath ) {
             var pathObj = path.parse(this.defaultExportPath);
             if( exportType == "json" ) {
-                pathObj.ext = ".json";
+                pathObj.ext = ".xml";
             } else if( exportType == "js" ) {
                 // If we already have a default export path specifically for JS files
                 // then we use that, otherwise let's use the standard JS naming scheme
@@ -401,7 +391,7 @@ InkProject.prototype.export = function(exportType) {
 
         if( exportType == "json" ) {
             saveOptions.filters = [
-                { name: i18n._("JSON files"), extensions: ["json"] }
+                { name: i18n._("XML files"), extensions: ["xml"] }
             ]
         } else if( exportType == "js" ) {
             saveOptions.filters = [
@@ -435,9 +425,11 @@ InkProject.prototype.export = function(exportType) {
                             this.convertJSONToJS(compiledJsonTempPath, targetSavePath);
                         } 
 
-                        // JSON: Just copy into place
+                        // JSON (XML): Old version was copying into place!! We're not doing that 'cause we're not suckers!!
+                        // Time to fuck this baby up!!!
                         else {
-                            copyFile(compiledJsonTempPath, targetSavePath);
+                            //copyFile(compiledJsonTempPath, targetSavePath);
+                            this.convertJSONToXML(compiledJsonTempPath, targetSavePath);
                         }
 
                     });
@@ -482,9 +474,17 @@ InkProject.prototype.jsFilename = function() {
 }
 
 // Convert JSON to JS file with "var storyContent = "
-InkProject.prototype.convertJSONToJS = function(jsonFilePath, targetJSPath) {
+InkProject.prototype.convertJSONToJS = function (jsonFilePath, targetJSPath) {
     copyFile(jsonFilePath, targetJSPath, (jsonContent) => {
         return `var storyContent = ${jsonContent};`;
+    });
+}
+
+// Convert JSON to XML file, suckers!!!!!!!
+InkProject.prototype.convertJSONToXML = function (jsonFilePath, targetJSPath) {
+    copyFile(jsonFilePath, targetJSPath, (jsonContent) => {
+      const escapedContent = xmlescape(jsonContent.substring(1));
+      return '<?xml version="1.0" encoding="utf-8"?>\n<XnaContent xmlns:ns="Microsoft.Xna.Framework">\n  <Asset Type="Starlight.Ink.MonoStory">\n    <text>' + escapedContent + '</text>\n  </Asset>\n</XnaContent>'
     });
 }
 

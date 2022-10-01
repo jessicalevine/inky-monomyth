@@ -208,6 +208,15 @@ exports.snippets = [
                 ink:  loadLongerSnippet("maybe.ink") 
             },
             {separator: true},
+
+            {
+                name: i18n._('Mathematics: abs'),
+                ink: "/* ---------------------------------\n"+
+                     "\n" +
+                     "   This whole section is a comment \n"+
+                     "\n" +
+                     " ----------------------------------*/\n"
+            },
             {
                 name: i18n._('Mathematics: divisor'),
                 ink: "=== function divisor(x, n)\n" +
@@ -244,10 +253,6 @@ exports.snippets = [
                 ink:  loadLongerSnippet("thread_in_tunnel.ink") 
             },
             {separator: true},
-            {
-                name: i18n._('Printing: a (or an)'),
-                ink:  loadLongerSnippet("a_or_an.ink") 
-            },
             {
                 name: i18n._('Printing: UPPERCASE'),
                 ink:  loadLongerSnippet("uppercase.ink") 

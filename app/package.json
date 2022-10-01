@@ -40,6 +40,7 @@
     "inkjs": "^2.1.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
-    "randomstring": "^1.1.5"
+    "randomstring": "^1.1.5",
+    "xml-escape": "^1.1.0"
   }
 }

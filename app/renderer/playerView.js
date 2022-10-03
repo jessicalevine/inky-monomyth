@@ -45,8 +45,8 @@ function showSessionView(sessionId) {
 
 function fadeIn($jqueryElement) {
 
-    const minimumTimeSeparation = 200;
-    const animDuration = 1000;
+    const minimumTimeSeparation = 50;
+    const animDuration = 100;
 
     var currentTime = Date.now();
     var timeSinceLastFade = currentTime - lastFadeTime;

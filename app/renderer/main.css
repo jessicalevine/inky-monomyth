@@ -1,3 +1,5 @@
+/* From the Inky source code with my modifications. See https://github.com/inkle/inky */
+
 body {
   padding: 0;
   margin: 0;
@@ -593,7 +595,7 @@ img.issue-icon.warning {
   right: 0;
   left: 50%;
 
-  font-family: Verdana, Geneva, sans-serif;
+  font-family: monospace;
   font-weight: lighter;
   color: #555;
 }
@@ -638,7 +640,8 @@ img.issue-icon.warning {
 }
 
 #player p.choice {
-  text-align: center;
+  text-align: left;
+  white-space: pre-wrap;
 }
 
 #player p.choice a {
